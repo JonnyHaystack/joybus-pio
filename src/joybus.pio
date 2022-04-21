@@ -32,7 +32,7 @@ write_stop_bit:
     jmp read
 
 
-; Autopush with 8 bit ISR threshold
+; Autopush with 1 bit ISR threshold
 public read:
     set pindirs 0                   ; Set pin to input
 read_loop:
@@ -54,8 +54,8 @@ static inline void joybus_program_init(PIO pio, uint sm, uint program_offset, ui
     sm_config_set_in_pins(&c, pin);
     // Shift to left, no autopull, 9 bit
     sm_config_set_out_shift(&c, false, false, 9);
-    // Shift to left, autopush, 8 bit
-    sm_config_set_in_shift(&c, false, true, 8);
+    // Shift to left, autopush, 1 bit
+    sm_config_set_in_shift(&c, false, true, 1);
 
     int cycles_per_bit = joybus_T1 + joybus_T2 + joybus_T3;
     int bitrate = 250000;
@@ -65,25 +65,25 @@ static inline void joybus_program_init(PIO pio, uint sm, uint program_offset, ui
     pio_sm_init(pio, sm, program_offset + label_offset, &c);
 }
 
-;static inline pio_sm_config joybus_program_get_config(PIO pio, uint sm, uint offset, uint pin) {
-;    pio_gpio_init(pio, pin);
-;
-;    pio_sm_config c = joybus_program_get_default_config(offset);
-;    sm_config_set_out_pins(&c, pin, 1);
-;    sm_config_set_set_pins(&c, pin, 1);
-;    sm_config_set_in_pins(&c, pin);
-;    // Shift to left, no autopull, 9 bit
-;    sm_config_set_out_shift(&c, false, false, 9);
-;    // Shift to left, autopush, 8 bit
-;    sm_config_set_in_shift(&c, false, true, 8);
-;
-;    int cycles_per_bit = joybus_T1 + joybus_T2 + joybus_T3;
-;    int bitrate = 250000;
-;    float div = clock_get_hz(clk_sys) / (cycles_per_bit * bitrate);
-;    sm_config_set_clkdiv(&c, div);
-;
-;    return c;
-;}
+//static inline pio_sm_config joybus_program_get_config(PIO pio, uint sm, uint offset, uint pin) {
+//    pio_gpio_init(pio, pin);
+//
+//    pio_sm_config c = joybus_program_get_default_config(offset);
+//    sm_config_set_out_pins(&c, pin, 1);
+//    sm_config_set_set_pins(&c, pin, 1);
+//    sm_config_set_in_pins(&c, pin);
+//    // Shift to left, no autopull, 9 bit
+//    sm_config_set_out_shift(&c, false, false, 9);
+//    // Shift to left, autopush, 8 bit
+//    sm_config_set_in_shift(&c, false, true, 8);
+//
+//    int cycles_per_bit = joybus_T1 + joybus_T2 + joybus_T3;
+//    int bitrate = 250000;
+//    float div = clock_get_hz(clk_sys) / (cycles_per_bit * bitrate);
+//    sm_config_set_clkdiv(&c, div);
+//
+//    return c;
+//}
 
 static inline void joybus_program_send_init(PIO pio, uint sm, uint offset, uint pin) {
     joybus_program_init(pio, sm, offset, joybus_offset_write, pin);
@@ -93,13 +93,13 @@ static inline void joybus_program_receive_init(PIO pio, uint sm, uint offset, ui
     joybus_program_init(pio, sm, offset, joybus_offset_read, pin);
 }
 
-;static inline void joybus_program_send_init(PIO pio, uint sm, uint offset, uint pin, pio_sm_config *c) {
-;    pio_sm_init(pio, sm, offset + joybus_offset_write, c);
-;    pio_sm_set_enabled(pio, sm, true);
-;}
-;
-;static inline void joybus_program_receive_init(PIO pio, uint sm, uint offset, uint pin, pio_sm_config *c) {
-;    pio_sm_init(pio, sm, offset + joybus_offset_read, c);
-;    pio_sm_set_enabled(pio, sm, true);
-;}
+//static inline void joybus_program_send_init(PIO pio, uint sm, uint offset, uint pin, pio_sm_config *c) {
+//    pio_sm_init(pio, sm, offset + joybus_offset_write, c);
+//    pio_sm_set_enabled(pio, sm, true);
+//}
+//
+//static inline void joybus_program_receive_init(PIO pio, uint sm, uint offset, uint pin, pio_sm_config *c) {
+//    pio_sm_init(pio, sm, offset + joybus_offset_read, c);
+//    pio_sm_set_enabled(pio, sm, true);
+//}
 %}

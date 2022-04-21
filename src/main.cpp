@@ -2,12 +2,7 @@
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 
-#include "joybus.h"
-
-void joybus_send_bytes(PIO pio, uint sm, uint offset, uint pin, uint8_t *bytes, uint len);
-void joybus_send_byte(PIO pio, uint sm, uint8_t byte, bool stop);
-uint8_t joybus_receive_bytes(PIO pio, uint sm, uint offset, uint pin, uint8_t *buf, uint len);
-uint8_t joybus_receive_byte(PIO pio, uint sm);
+#include "joybus.hpp"
 
 pio_sm_config config;
 
@@ -20,9 +15,10 @@ int main(void)
 
     uint joybus_pin = 4;
 
-    PIO pio = pio0;
-    uint sm = pio_claim_unused_sm(pio, true);
-    uint offset = pio_add_program(pio, &joybus_program);
+    joybus_port_t port;
+    if (joybus_port_init(&port, pio0) != 0) {
+        printf("Error occurred when initialising PIO program\n");
+    }
 
     // LED
     bool led = true;
@@ -44,10 +40,10 @@ int main(void)
         printf("Received 0x%02x\n", buf[0]);
         if (buf[0] == 0x00) {
             uint8_t bytes[] = { 0x09, 0x00, 0x03 };
-            joybus_send_bytes(pio, sm, offset, joybus_pin, bytes, sizeof(bytes));
+            // joybus_send_bytes(pio, sm, offset, joybus_pin, bytes, sizeof(bytes));
         }
         // joybus_receive_bytes(pio, sm, offset, joybus_pin, buf, sizeof(buf));
-        joybus_receive_byte(pio, sm);
+        // joybus_receive_byte(pio, sm);
         // printf("Received 0x%02x\n", buf[0]);
         // sleep_ms(500);
     }

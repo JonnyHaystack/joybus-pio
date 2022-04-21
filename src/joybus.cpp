@@ -1,4 +1,25 @@
-#include "joybus.h"
+#include "joybus.hpp"
+
+int joybus_port_init(joybus_port_t *port, PIO pio) {
+    int sm = pio_claim_unused_sm(pio, false);
+    if (sm < 0) {
+        return 1;
+    }
+
+    return joybus_port_init(port, pio, sm);
+}
+
+int joybus_port_init(joybus_port_t *port, PIO pio, uint sm) {
+    return joybus_port_init(port, pio, sm, pio_add_program(pio, &joybus_program));
+}
+
+int joybus_port_init(joybus_port_t *port, PIO pio, uint sm, uint offset) {
+    port->pio = pio;
+    port->sm = sm;
+    port->offset = offset;
+
+    return 0;
+}
 
 /**
  * @brief Send and receive a certain number of bytes 
@@ -11,7 +32,7 @@
  * @param message_len 
  * @param response_buf 
  * @param response_len 
- * @param read_timeout_ms 
+ * @param read_timeout_us 
  * @return uint8_t 
  */
 uint8_t joybus_send_receive(
@@ -23,7 +44,7 @@ uint8_t joybus_send_receive(
     uint message_len,
     uint8_t *response_buf,
     uint response_len,
-    uint read_timeout_ms
+    uint read_timeout_us
 ) {
     // If the message has length zero, we send nothing and manually init
     // the state machine for receiving.
@@ -40,7 +61,7 @@ uint8_t joybus_send_receive(
         pin,
         response_buf,
         response_len,
-        read_timeout_ms
+        read_timeout_us
     );
 }
 
@@ -68,7 +89,6 @@ uint8_t joybus_receive_bytes(
     PIO pio,
     uint sm,
     uint offset,
-    uint pin,
     uint8_t *buf,
     uint len,
     uint64_t timeout_us
@@ -88,22 +108,45 @@ uint8_t joybus_receive_bytes(
             }
         }
 
-        buf[bytes_received] = joybus_receive_byte(pio, sm);
+        if (!joybus_receive_byte(pio, sm, &buf[bytes_received])) {
+            return bytes_received;
+        }
     }
 
     return bytes_received;
 }
 
-uint8_t joybus_receive_byte(PIO pio, uint sm) {
+bool joybus_receive_byte(PIO pio, uint sm, uint8_t *byte) {
     // TODO: Change autopush threshold to 1 and add bit timeout which works
     // the same as the above byte timeout.
     // Make sure byte timeout will still work correctly with new autopush
-    // threshold.
+    // threshold. I think it should.
     // Should torture test this reading by spamming continuous bits at it from
     // another Pico, and seeing if the FIFO fills up. We want to make sure
     // we're reading it faster than bits are added to it. i.e. we can only spend
     // 130*4 cycles per bit doing stuff outside of pio_sm_get_blocking(),
     // including what we do in joybus_receive_bytes(), because we'll still be
     // accumulating bits here while we do stuff in there.
-    return (uint8_t) pio_sm_get_blocking(pio, sm);
+    uint8_t received_byte = 0;
+
+    for (int bits_received = 0; bits_received < 8; bits_received++) {
+        absolute_time_t timeout_timestamp = make_timeout_time_us(10);
+        while (bits_received > 0 && pio_sm_is_rx_fifo_empty(pio, sm)) {
+            if (time_reached(timeout_timestamp)) {
+                return false;
+            }
+        }
+        printf("RX FIFO level: %d\n", pio_sm_get_rx_fifo_level(pio, sm));
+
+        // TODO: Technically masking on the LSB shouldn't be necessary because
+        // the autopush threshold is set to 1, so we're only expecting the LSB
+        // to be set in each byte that is pushed anyway.
+        bool received_bit = pio_sm_get_blocking(pio, sm) & 0x01;
+
+        received_byte |= received_bit << bits_received;
+    }
+
+    *byte = received_byte;
+
+    return true;
 }
