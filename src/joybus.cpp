@@ -30,6 +30,10 @@ int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, uint sm, uint offse
     return 0;
 }
 
+void joybus_reset_receive(joybus_port_t *port) {
+    joybus_program_receive_init(port->pio, port->sm, port->offset, port->pin);
+}
+
 uint joybus_send_receive(
     joybus_port_t *port,
     uint8_t *message,
@@ -43,12 +47,7 @@ uint joybus_send_receive(
     if (message_len > 0) {
         joybus_send_bytes(port, message, message_len);
     } else {
-        joybus_program_receive_init(
-            port->pio,
-            port->sm,
-            port->offset,
-            port->pin
-        );
+        joybus_reset_receive(port);
     }
 
     return joybus_receive_bytes(

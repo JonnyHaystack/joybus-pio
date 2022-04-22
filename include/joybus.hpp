@@ -29,6 +29,8 @@ uint joybus_send_receive(
 void joybus_send_bytes(joybus_port_t *port, uint8_t *bytes, uint len);
 void joybus_send_byte(joybus_port_t *port, uint8_t byte, bool stop);
 
+void joybus_reset_receive(joybus_port_t *port);
+
 uint joybus_receive_bytes(
     joybus_port_t *port,
     uint8_t *buf,
