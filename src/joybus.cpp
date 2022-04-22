@@ -10,13 +10,7 @@ int joybus_port_init(joybus_port_t *port, uint pin, PIO pio) {
 }
 
 int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, uint sm) {
-    return joybus_port_init(
-        port,
-        pin,
-        pio,
-        sm,
-        pio_add_program(pio, &joybus_program)
-    );
+    return joybus_port_init(port, pin, pio, sm, pio_add_program(pio, &joybus_program));
 }
 
 int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, uint sm, uint offset) {
@@ -50,12 +44,7 @@ uint joybus_send_receive(
         joybus_reset_receive(port);
     }
 
-    return joybus_receive_bytes(
-        port,
-        response_buf,
-        response_len,
-        read_timeout_us
-    );
+    return joybus_receive_bytes(port, response_buf, response_len, read_timeout_us);
 }
 
 void joybus_send_bytes(joybus_port_t *port, uint8_t *bytes, uint len) {
@@ -71,12 +60,7 @@ void joybus_send_byte(joybus_port_t *port, uint8_t byte, bool stop) {
     pio_sm_put_blocking(port->pio, port->sm, data_shifted);
 }
 
-uint joybus_receive_bytes(
-    joybus_port_t *port,
-    uint8_t *buf,
-    uint len,
-    uint64_t timeout_us
-) {
+uint joybus_receive_bytes(joybus_port_t *port, uint8_t *buf, uint len, uint64_t timeout_us) {
     uint8_t bytes_received;
 
     for (bytes_received = 0; bytes_received < len; bytes_received++) {

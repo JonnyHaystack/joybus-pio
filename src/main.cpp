@@ -1,13 +1,13 @@
-#include <stdio.h>
-#include "pico/stdlib.h"
-#include "hardware/pio.h"
-
 #include "joybus.hpp"
+
+#include "hardware/pio.h"
+#include "pico/stdlib.h"
+
+#include <stdio.h>
 
 void print_bytes(const char *prefix, uint8_t *bytes, uint len);
 
-int main(void)
-{  
+int main(void) {
     set_sys_clock_khz(130000, true);
 
     stdio_init_all();

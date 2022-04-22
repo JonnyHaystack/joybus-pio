@@ -1,10 +1,10 @@
 #ifndef JOYBUS_H
 #define JOYBUS_H
 
-#include "pico/stdlib.h"
-#include "hardware/pio.h"
-
 #include "joybus.pio.h"
+
+#include "hardware/pio.h"
+#include "pico/stdlib.h"
 
 typedef struct {
     uint pin;
@@ -31,12 +31,7 @@ void joybus_send_byte(joybus_port_t *port, uint8_t byte, bool stop);
 
 void joybus_reset_receive(joybus_port_t *port);
 
-uint joybus_receive_bytes(
-    joybus_port_t *port,
-    uint8_t *buf,
-    uint len,
-    uint64_t timeout_us
-);
+uint joybus_receive_bytes(joybus_port_t *port, uint8_t *buf, uint len, uint64_t timeout_us);
 uint8_t joybus_receive_byte(joybus_port_t *port);
 bool joybus_receive_byte_timeout(joybus_port_t *port, uint8_t *byte, uint64_t timeout_us);
 
