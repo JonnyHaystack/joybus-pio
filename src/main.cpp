@@ -49,7 +49,7 @@ int main(void)
             print_bytes("Invalid command: ", response, response_len);
             // If we received an invalid command, wait long enough for command
             // to finish, then reset receiving.
-            sleep_us(100);
+            sleep_us(125);
             joybus_reset_receive(&port);
         }
     }
