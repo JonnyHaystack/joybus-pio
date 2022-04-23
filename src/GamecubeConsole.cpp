@@ -9,20 +9,12 @@
 const uint GamecubeConsole::incoming_bit_length_us = 5;
 const uint GamecubeConsole::max_command_len = 3;
 
-GamecubeConsole::GamecubeConsole(uint pin, PIO pio) {
-    GamecubeConsole(pin, pio, -1, -1);
-}
-
-GamecubeConsole::GamecubeConsole(uint pin, PIO pio, uint sm) {
-    GamecubeConsole(pin, pio, sm, -1);
-}
-
 GamecubeConsole::GamecubeConsole(uint pin, PIO pio, uint sm, uint offset) {
-    joybus_port_init(&port, pin, pio, sm, offset);
-
     receive_timeout_us = incoming_bit_length_us * 10;
     reset_wait_period_us =
         (incoming_bit_length_us * 8) * (max_command_len - 1) + receive_timeout_us;
+
+    joybus_port_init(&port, pin, pio, sm, offset);
 }
 
 GamecubeConsole::~GamecubeConsole() {
