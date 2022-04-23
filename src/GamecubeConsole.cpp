@@ -6,6 +6,9 @@
 #include "hardware/pio.h"
 #include "pico/stdlib.h"
 
+const uint GamecubeConsole::incoming_bit_length_us = 5;
+const uint GamecubeConsole::max_command_len = 3;
+
 GamecubeConsole::GamecubeConsole(uint pin, PIO pio) {
     joybus_port_init(&port, pin, pio, -1, -1);
 }
@@ -16,6 +19,10 @@ GamecubeConsole::GamecubeConsole(uint pin, PIO pio, uint sm) {
 
 GamecubeConsole::GamecubeConsole(uint pin, PIO pio, uint sm, uint offset) {
     joybus_port_init(&port, pin, pio, sm, offset);
+
+    receive_timeout_us = incoming_bit_length_us * 10;
+    reset_wait_period_us =
+        (incoming_bit_length_us * 8) * (max_command_len - 1) + receive_timeout_us;
 }
 
 GamecubeConsole::~GamecubeConsole() {
@@ -29,7 +36,8 @@ bool GamecubeConsole::WaitForPoll() {
     while (true) {
         // TODO: Experiment with reading just one byte, checking it against
         // known commands, then reading more if it's a command with more length.
-        uint response_len = joybus_receive_bytes(&port, response, sizeof(response), 50);
+        uint response_len =
+            joybus_receive_bytes(&port, response, sizeof(response), receive_timeout_us);
 
         if (response_len == 1 && response[0] == 0x00) {
             uint8_t status[] = { 0x09, 0x00, 0x03 };
@@ -43,8 +51,8 @@ bool GamecubeConsole::WaitForPoll() {
         } else {
             // If we received an invalid command, wait long enough for command
             // to finish, then reset receiving.
-            sleep_us(125);
-            joybus_reset_receive(&port);
+            sleep_us(reset_wait_period_us);
+            joybus_port_reset(&port);
         }
     }
 }
