@@ -11,15 +11,13 @@ pico_sdk_init()
 include_directories(include)
 
 add_executable(
-  joybus_pio
-  src/main.cpp
+  test.cpp
+  test/main.cpp
   src/joybus.c
   src/GamecubeConsole.cpp
 )
 
 pico_generate_pio_header(joybus_pio ${CMAKE_CURRENT_LIST_DIR}/src/joybus.pio)
-
-#target_sources(joybus_pio src/main.c)
 
 target_link_libraries(joybus_pio pico_stdlib hardware_pio)
 
