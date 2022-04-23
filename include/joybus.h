@@ -41,6 +41,14 @@ int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset)
 void joybus_port_terminate(joybus_port_t *port);
 
 /**
+ * @brief Reset the state machine to clean state ready to start receiving data from a connected
+ * joybus device/host
+ *
+ * @param port The joybus instance to reset
+ */
+void joybus_port_reset(joybus_port_t *port);
+
+/**
  * @brief Send a certain number of bytes to a joybus device/host, then attempt to receive back a
  * certain number of bytes
  *
@@ -80,14 +88,6 @@ void joybus_send_bytes(joybus_port_t *port, uint8_t *bytes, uint len);
  * @param stop If true, write a stop bit after the last byte to indicate end of transmission
  */
 void joybus_send_byte(joybus_port_t *port, uint8_t byte, bool stop);
-
-/**
- * @brief Reset the state machine to clean state ready to start receiving data from a connected
- * joybus device/host
- *
- * @param port The joybus instance to reset
- */
-void joybus_reset_receive(joybus_port_t *port);
 
 /**
  * @brief Attempt to receive a certain number of bytes from a joybus device/host

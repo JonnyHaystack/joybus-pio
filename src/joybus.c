@@ -31,7 +31,7 @@ void joybus_port_terminate(joybus_port_t *port) {
     pio_sm_unclaim(port->pio, port->sm);
 }
 
-void joybus_reset_receive(joybus_port_t *port) {
+void joybus_port_reset(joybus_port_t *port) {
     joybus_program_receive_init(port->pio, port->sm, port->offset, port->pin);
 }
 

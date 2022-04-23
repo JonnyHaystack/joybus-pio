@@ -5,6 +5,16 @@
 .define public T3 10
 
 
+; Autopush with 8 bit ISR threshold
+public read:
+    set pindirs 0                   ; Set pin to input
+read_loop:
+    wait 0 pin 0 [T1 + T2 / 2 - 1]  ; Wait for falling edge, then wait until halfway through the 2uS which represents the bit value
+    in pins, 1                      ; Read bit value
+    wait 1 pin 0                    ; Done reading, so make sure we wait for the line to go high again before restarting the loop
+    jmp read_loop
+
+
 ; 9 bit OSR threshold, no autopull because it interferes with !osre
 public write:
     set pindirs 0 [T2 - 1]  ; TODO: Experimental - Set pin to input and wait in case other side is still sending stop bit
@@ -32,16 +42,6 @@ write_stop_bit:
     jmp read
 
 
-; Autopush with 8 bit ISR threshold
-public read:
-    set pindirs 0                   ; Set pin to input
-read_loop:
-    wait 0 pin 0 [T1 + T2 / 2 - 1]  ; Wait for falling edge, then wait until halfway through the 2uS which represents the bit value
-    in pins, 1                      ; Read bit value
-    wait 1 pin 0                    ; Done reading, so make sure we wait for the line to go high again before restarting the loop
-    jmp read_loop
-
-
 % c-sdk {
 #include "hardware/clocks.h"
 
@@ -66,11 +66,11 @@ static inline void joybus_program_init(PIO pio, uint sm, uint program_offset, ui
     pio_sm_set_enabled(pio, sm, true);
 }
 
-static inline void joybus_program_send_init(PIO pio, uint sm, uint offset, uint pin) {
-    joybus_program_init(pio, sm, offset, joybus_offset_write, pin);
-}
-
 static inline void joybus_program_receive_init(PIO pio, uint sm, uint offset, uint pin) {
     joybus_program_init(pio, sm, offset, joybus_offset_read, pin);
+}
+
+static inline void joybus_program_send_init(PIO pio, uint sm, uint offset, uint pin) {
+    joybus_program_init(pio, sm, offset, joybus_offset_write, pin);
 }
 %}
