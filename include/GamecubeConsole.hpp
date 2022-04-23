@@ -1,11 +1,11 @@
-#ifndef GAMECUBECONSOLE_H
-#define GAMECUBECONSOLE_H
-
-#include "joybus.hpp"
-
-#include "hardware/pio.h"
+#ifndef _JOYBUS_GAMECUBECONSOLE_HPP
+#define _JOYBUS_GAMECUBECONSOLE_HPP
 
 #include "gamecube_definitions.h"
+#include "joybus.h"
+
+#include "hardware/pio.h"
+#include "pico/stdlib.h"
 
 class GamecubeConsole {
   public:

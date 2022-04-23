@@ -13,7 +13,8 @@ include_directories(include)
 add_executable(
   joybus_pio
   src/main.cpp
-  src/joybus.cpp
+  src/joybus.c
+  src/GamecubeConsole.cpp
 )
 
 pico_generate_pio_header(joybus_pio ${CMAKE_CURRENT_LIST_DIR}/src/joybus.pio)

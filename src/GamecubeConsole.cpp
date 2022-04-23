@@ -1,11 +1,17 @@
 #include "GamecubeConsole.hpp"
 
+#include "gamecube_definitions.h"
+#include "joybus.h"
+
+#include "hardware/pio.h"
+#include "pico/stdlib.h"
+
 GamecubeConsole::GamecubeConsole(uint pin, PIO pio) {
-    joybus_port_init(&port, pin, pio);
+    joybus_port_init(&port, pin, pio, -1, -1);
 }
 
 GamecubeConsole::GamecubeConsole(uint pin, PIO pio, uint sm) {
-    joybus_port_init(&port, pin, pio, sm);
+    joybus_port_init(&port, pin, pio, sm, -1);
 }
 
 GamecubeConsole::GamecubeConsole(uint pin, PIO pio, uint sm, uint offset) {
