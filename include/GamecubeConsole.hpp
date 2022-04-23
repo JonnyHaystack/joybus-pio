@@ -17,6 +17,14 @@ class GamecubeConsole {
     void SendReport(gc_report_t *report);
 
   private:
+    enum command {
+        PROBE = 0x00,
+        RESET = 0xFF,
+        ORIGIN = 0x41,
+        RECALIBRATE = 0x42,
+        POLL = 0x40,
+    };
+
     joybus_port_t port;
     static const uint incoming_bit_length_us;
     static const uint max_command_len;

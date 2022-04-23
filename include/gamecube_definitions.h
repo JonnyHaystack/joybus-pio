@@ -3,11 +3,6 @@
 
 #include "pico/stdlib.h"
 
-#define GC_CMD_PROBE 0x00
-#define GC_CMD_RECALIBRATE 0xFF
-#define GC_CMD_ORIGIN 0x41
-#define GC_CMD_POLL 0x40
-
 typedef struct {
     uint8_t a : 1;
     uint8_t b : 1;

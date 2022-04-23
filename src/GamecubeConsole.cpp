@@ -39,13 +39,13 @@ bool GamecubeConsole::WaitForPoll() {
         uint response_len =
             joybus_receive_bytes(&port, response, sizeof(response), receive_timeout_us);
 
-        if (response_len == 1 && response[0] == 0x00) {
+        if (response_len == 1 && (response[0] == PROBE || response[0] == RESET)) {
             uint8_t status[] = { 0x09, 0x00, 0x03 };
             joybus_send_bytes(&port, status, sizeof(status));
-        } else if (response_len == 1 && response[0] == 0x41) {
+        } else if (response_len == 1 && (response[0] == ORIGIN || response[0] == RECALIBRATE)) {
             uint8_t origin[] = { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x1F, 0x1F, 0x00, 0x00 };
             joybus_send_bytes(&port, origin, sizeof(origin));
-        } else if (response_len == 3 && response[0] == 0x40 && response[1] <= 0x07) {
+        } else if (response_len == 3 && response[0] == POLL && response[1] <= 0x07) {
             // Return value of rumble bit (least significant bit in last byte).
             return response[2] & 0x01;
         } else {
