@@ -10,11 +10,11 @@ const uint GamecubeConsole::incoming_bit_length_us = 5;
 const uint GamecubeConsole::max_command_len = 3;
 
 GamecubeConsole::GamecubeConsole(uint pin, PIO pio) {
-    joybus_port_init(&port, pin, pio, -1, -1);
+    GamecubeConsole(pin, pio, -1, -1);
 }
 
 GamecubeConsole::GamecubeConsole(uint pin, PIO pio, uint sm) {
-    joybus_port_init(&port, pin, pio, sm, -1);
+    GamecubeConsole(pin, pio, sm, -1);
 }
 
 GamecubeConsole::GamecubeConsole(uint pin, PIO pio, uint sm, uint offset) {
