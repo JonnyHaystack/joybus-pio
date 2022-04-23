@@ -48,7 +48,7 @@ uint joybus_send_receive(
     if (message_len > 0) {
         joybus_send_bytes(port, message, message_len);
     } else {
-        joybus_reset_receive(port);
+        joybus_port_reset(port);
     }
 
     return joybus_receive_bytes(port, response_buf, response_len, read_timeout_us);
