@@ -24,6 +24,12 @@ int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, uint sm, uint offse
     return 0;
 }
 
+void joybus_port_terminate(joybus_port_t *port) {
+    pio_sm_set_enabled(port->pio, port->sm, false);
+    pio_sm_unclaim(port->pio, port->sm);
+    pio_remove_program(port->pio, &joybus_program, port->offset);
+}
+
 void joybus_reset_receive(joybus_port_t *port) {
     joybus_program_receive_init(port->pio, port->sm, port->offset, port->pin);
 }
@@ -115,9 +121,6 @@ bool joybus_receive_byte_timeout(joybus_port_t *port, uint8_t *byte, uint32_t ti
         //     pio_sm_get_rx_fifo_level(port->pio, port->sm)
         // );
 
-        // TODO: Technically masking on the LSB shouldn't be necessary because
-        // the autopush threshold is set to 1, so we're only expecting the LSB
-        // to be set in each byte that is pushed anyway.
         bool received_bit = pio_sm_get_blocking(port->pio, port->sm) & 0x01;
 
         received_byte |= received_bit << bits_received;

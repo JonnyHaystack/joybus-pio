@@ -16,6 +16,7 @@ typedef struct {
 int joybus_port_init(joybus_port_t *port, uint pin, PIO pio);
 int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, uint sm);
 int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, uint sm, uint offset);
+void joybus_port_terminate(joybus_port_t *port);
 
 uint joybus_send_receive(
     joybus_port_t *port,
