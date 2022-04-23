@@ -13,6 +13,7 @@ typedef struct {
     uint offset;
 } joybus_port_t;
 
+// TODO: Merge these 3 into one function and use pure C for internal code, C++ for API
 int joybus_port_init(joybus_port_t *port, uint pin, PIO pio);
 int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, uint sm);
 int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, uint sm, uint offset);
