@@ -9,7 +9,7 @@
 
 class GamecubeConsole {
   public:
-    GamecubeConsole(uint pin, PIO pio, uint sm = -1, uint offset = -1);
+    GamecubeConsole(uint pin, PIO pio, int sm = -1, int offset = -1);
     ~GamecubeConsole();
     bool WaitForPoll();
     void SendReport(gc_report_t *report);

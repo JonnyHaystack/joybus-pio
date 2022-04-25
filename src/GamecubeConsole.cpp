@@ -9,7 +9,7 @@
 const uint GamecubeConsole::incoming_bit_length_us = 5;
 const uint GamecubeConsole::max_command_len = 3;
 
-GamecubeConsole::GamecubeConsole(uint pin, PIO pio, uint sm, uint offset) {
+GamecubeConsole::GamecubeConsole(uint pin, PIO pio, int sm, int offset) {
     receive_timeout_us = incoming_bit_length_us * 10;
     reset_wait_period_us =
         (incoming_bit_length_us * 8) * (max_command_len - 1) + receive_timeout_us;
@@ -38,6 +38,7 @@ bool GamecubeConsole::WaitForPoll() {
             uint8_t origin[] = { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x1F, 0x1F, 0x00, 0x00 };
             joybus_send_bytes(&port, origin, sizeof(origin));
         } else if (response_len == 3 && response[0] == POLL && response[1] <= 0x07) {
+            // TODO: Implement other reading modes
             // Return value of rumble bit (least significant bit in last byte).
             return response[2] & 0x01;
         } else {
