@@ -11,7 +11,7 @@ pico_sdk_init()
 include_directories(include)
 
 add_executable(
-  test.cpp
+  joybus_pio
   test/main.cpp
   src/joybus.c
   src/GamecubeConsole.cpp
