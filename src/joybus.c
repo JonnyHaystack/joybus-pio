@@ -71,11 +71,11 @@ void __not_in_flash_func(joybus_send_byte)(joybus_port_t *port, uint8_t byte, bo
 }
 
 uint __not_in_flash_func(joybus_receive_bytes)(
-        joybus_port_t *port,
-        uint8_t *buf,
-        uint len,
-        uint64_t timeout_us,
-        bool first_byte_can_timeout
+    joybus_port_t *port,
+    uint8_t *buf,
+    uint len,
+    uint64_t timeout_us,
+    bool first_byte_can_timeout
 ) {
     uint8_t bytes_received;
 
