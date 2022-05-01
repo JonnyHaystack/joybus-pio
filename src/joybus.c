@@ -35,7 +35,7 @@ void joybus_port_reset(joybus_port_t *port) {
     joybus_program_receive_init(port->pio, port->sm, port->offset, port->pin);
 }
 
-uint joybus_send_receive(
+uint __not_in_flash_func(joybus_send_receive)(
     joybus_port_t *port,
     uint8_t *message,
     uint message_len,
@@ -54,7 +54,7 @@ uint joybus_send_receive(
     return joybus_receive_bytes(port, response_buf, response_len, read_timeout_us);
 }
 
-void joybus_send_bytes(joybus_port_t *port, uint8_t *bytes, uint len) {
+void __not_in_flash_func(joybus_send_bytes)(joybus_port_t *port, uint8_t *bytes, uint len) {
     joybus_program_send_init(port->pio, port->sm, port->offset, port->pin);
 
     for (int i = 0; i < len; i++) {
@@ -62,12 +62,17 @@ void joybus_send_bytes(joybus_port_t *port, uint8_t *bytes, uint len) {
     }
 }
 
-void joybus_send_byte(joybus_port_t *port, uint8_t byte, bool stop) {
+void __not_in_flash_func(joybus_send_byte)(joybus_port_t *port, uint8_t byte, bool stop) {
     uint32_t data_shifted = (byte << 24) | (stop << 23);
     pio_sm_put_blocking(port->pio, port->sm, data_shifted);
 }
 
-uint joybus_receive_bytes(joybus_port_t *port, uint8_t *buf, uint len, uint64_t timeout_us) {
+uint __not_in_flash_func(joybus_receive_bytes)(
+        joybus_port_t *port,
+        uint8_t *buf,
+        uint len,
+        uint64_t timeout_us
+) {
     uint8_t bytes_received;
 
     for (bytes_received = 0; bytes_received < len; bytes_received++) {
@@ -91,7 +96,7 @@ uint joybus_receive_bytes(joybus_port_t *port, uint8_t *buf, uint len, uint64_t 
     return bytes_received;
 }
 
-uint8_t joybus_receive_byte(joybus_port_t *port) {
+uint8_t __not_in_flash_func(joybus_receive_byte)(joybus_port_t *port) {
     return pio_sm_get_blocking(port->pio, port->sm);
 }
 

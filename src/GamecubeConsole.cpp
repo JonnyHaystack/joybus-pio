@@ -21,7 +21,7 @@ GamecubeConsole::~GamecubeConsole() {
     joybus_port_terminate(&port);
 }
 
-bool GamecubeConsole::WaitForPoll() {
+bool __not_in_flash_func(GamecubeConsole::WaitForPoll)() {
     uint8_t response[3];
     uint response_len;
 
@@ -50,6 +50,6 @@ bool GamecubeConsole::WaitForPoll() {
     }
 }
 
-void GamecubeConsole::SendReport(gc_report_t *report) {
+void __not_in_flash_func(GamecubeConsole::SendReport)(gc_report_t *report) {
     joybus_send_bytes(&port, (uint8_t *)report, sizeof(gc_report_t));
 }
