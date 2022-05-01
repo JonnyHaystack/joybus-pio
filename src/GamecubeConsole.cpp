@@ -22,30 +22,42 @@ GamecubeConsole::~GamecubeConsole() {
 }
 
 bool __not_in_flash_func(GamecubeConsole::WaitForPoll)() {
-    uint8_t response[3];
-    uint response_len;
+    // Buffer for receiving command.
+    uint8_t received[2];
+    uint received_len;
+
+    // Default status response.
+    uint8_t status[] = { 0x09, 0x00, 0x03 };
+    // Default origin response.
+    uint8_t origin[] = { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x1F, 0x1F, 0x00, 0x00 };
 
     while (true) {
-        // TODO: Experiment with reading just one byte, checking it against
-        // known commands, then reading more if it's a command with more length.
-        uint response_len =
-            joybus_receive_bytes(&port, response, sizeof(response), receive_timeout_us);
+        joybus_receive_bytes(&port, received, 1, receive_timeout_us, false);
 
-        if (response_len == 1 && (response[0] == PROBE || response[0] == RESET)) {
-            uint8_t status[] = { 0x09, 0x00, 0x03 };
-            joybus_send_bytes(&port, status, sizeof(status));
-        } else if (response_len == 1 && (response[0] == ORIGIN || response[0] == RECALIBRATE)) {
-            uint8_t origin[] = { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x1F, 0x1F, 0x00, 0x00 };
-            joybus_send_bytes(&port, origin, sizeof(origin));
-        } else if (response_len == 3 && response[0] == POLL && response[1] <= 0x07) {
-            // TODO: Implement other reading modes
-            // Return value of rumble bit (least significant bit in last byte).
-            return response[2] & 0x01;
-        } else {
-            // If we received an invalid command, wait long enough for command
-            // to finish, then reset receiving.
-            sleep_us(reset_wait_period_us);
-            joybus_port_reset(&port);
+        switch (received[0]) {
+            case RESET:
+            case PROBE:
+                joybus_send_bytes(&port, status, sizeof(status));
+                break;
+            case RECALIBRATE:
+            case ORIGIN:
+                joybus_send_bytes(&port, origin, sizeof(origin));
+                break;
+            case POLL:
+                // Poll command is 3 bytes total, so read the next 2 bytes now.
+                received_len = joybus_receive_bytes(&port, received, 2, receive_timeout_us, true);
+                // Second byte indicates the reading mode.
+                // TODO: Implement other reading modes
+                if (received_len == 2 && received[0] <= 0x07) {
+                    // Return value of rumble bit (least significant bit in last byte).
+                    return received[1] & 0x01;
+                }
+                break;
+            default:
+                // If we received an invalid command, wait long enough for command
+                // to finish, then reset receiving.
+                sleep_us(reset_wait_period_us);
+                joybus_port_reset(&port);
         }
     }
 }

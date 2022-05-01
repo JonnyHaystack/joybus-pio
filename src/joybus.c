@@ -2,6 +2,9 @@
 
 #include "joybus.pio.h"
 
+#include "hardware/pio.h"
+#include "pico/stdlib.h"
+
 int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset) {
     if (sm < 0) {
         sm = pio_claim_unused_sm(pio, false);
@@ -51,7 +54,7 @@ uint __not_in_flash_func(joybus_send_receive)(
         joybus_port_reset(port);
     }
 
-    return joybus_receive_bytes(port, response_buf, response_len, read_timeout_us);
+    return joybus_receive_bytes(port, response_buf, response_len, read_timeout_us, false);
 }
 
 void __not_in_flash_func(joybus_send_bytes)(joybus_port_t *port, uint8_t *bytes, uint len) {
@@ -71,17 +74,20 @@ uint __not_in_flash_func(joybus_receive_bytes)(
         joybus_port_t *port,
         uint8_t *buf,
         uint len,
-        uint64_t timeout_us
+        uint64_t timeout_us,
+        bool first_byte_can_timeout
 ) {
     uint8_t bytes_received;
 
     for (bytes_received = 0; bytes_received < len; bytes_received++) {
-        /* Read timeout in case we don't receive as many bytes as we expected
-         * for some reason.
-         * This timeout is only applied after we receive the first byte, because
-         * we don't know how long we'll have to wait for the first byte but we
-         * know how long we should have to wait between bytes in one message. */
-        if (bytes_received > 0) {
+        /* Read timeout in case we don't receive as many bytes as we expected for some reason.
+         * Usually this timeout is only applied after we receive the first byte, because we don't
+         * know how long we'll have to wait for the first byte, but we know how long we should
+         * have to wait between bytes in one message. However, sometimes we might want to read one
+         * byte of a command, do some processing, and then read another byte. In that case, we
+         * would have to also apply the timeout to the first byte of the second read, because it
+         * isn't actually the first byte of the command. */
+        if (bytes_received > 0 || first_byte_can_timeout) {
             absolute_time_t timeout_timestamp = make_timeout_time_us(timeout_us);
             while (pio_sm_is_rx_fifo_empty(port->pio, port->sm)) {
                 if (time_reached(timeout_timestamp)) {
@@ -98,41 +104,4 @@ uint __not_in_flash_func(joybus_receive_bytes)(
 
 uint8_t __not_in_flash_func(joybus_receive_byte)(joybus_port_t *port) {
     return pio_sm_get_blocking(port->pio, port->sm);
-}
-
-bool joybus_receive_byte_timeout(joybus_port_t *port, uint8_t *byte, uint64_t timeout_us) {
-    // TODO: Change autopush threshold to 1 and add bit timeout which works
-    // the same as the above byte timeout.
-    // Make sure byte timeout will still work correctly with new autopush
-    // threshold. I think it should.
-    // Should torture test this reading by spamming continuous bits at it from
-    // another Pico, and seeing if the FIFO fills up. We want to make sure
-    // we're reading it faster than bits are added to it. i.e. we can only spend
-    // 130*4 cycles per bit doing stuff outside of pio_sm_get_blocking(),
-    // including what we do in joybus_receive_bytes(), because we'll still be
-    // accumulating bits here while we do stuff in there.
-    uint8_t received_byte = 0;
-
-    for (int bits_received = 0; bits_received < 8; bits_received++) {
-        if (bits_received > 0) {
-            absolute_time_t timeout_timestamp = make_timeout_time_us(timeout_us);
-            while (pio_sm_is_rx_fifo_empty(port->pio, port->sm)) {
-                if (time_reached(timeout_timestamp)) {
-                    return false;
-                }
-            }
-        }
-        // printf(
-        //     "RX FIFO level: %d\n",
-        //     pio_sm_get_rx_fifo_level(port->pio, port->sm)
-        // );
-
-        bool received_bit = pio_sm_get_blocking(port->pio, port->sm) & 0x01;
-
-        received_byte |= received_bit << bits_received;
-    }
-
-    *byte = received_byte;
-
-    return true;
 }

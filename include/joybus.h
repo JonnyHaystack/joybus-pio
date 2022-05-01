@@ -96,10 +96,17 @@ void joybus_send_byte(joybus_port_t *port, uint8_t byte, bool stop);
  * @param buf The buffer to write received bytes into
  * @param len The number of bytes to attempt to receive
  * @param timeout_us How many microseconds to wait before timing out for each byte after the first
+ * @param first_byte_can_timeout If true, the timeout is also applied to the first byte
  *
  * @return The actual number of bytes received
  */
-uint joybus_receive_bytes(joybus_port_t *port, uint8_t *buf, uint len, uint64_t timeout_us);
+uint joybus_receive_bytes(
+    joybus_port_t *port,
+    uint8_t *buf,
+    uint len,
+    uint64_t timeout_us,
+    bool first_byte_can_timeout
+);
 
 /**
  * @brief Receive a single byte from a joybus device/host
@@ -109,8 +116,6 @@ uint joybus_receive_bytes(joybus_port_t *port, uint8_t *buf, uint len, uint64_t 
  * @return The received byte
  */
 uint8_t joybus_receive_byte(joybus_port_t *port);
-
-bool joybus_receive_byte_timeout(joybus_port_t *port, uint8_t *byte, uint64_t timeout_us);
 
 #ifdef __cplusplus
 }
