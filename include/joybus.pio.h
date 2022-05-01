@@ -65,7 +65,13 @@ static inline pio_sm_config joybus_program_get_default_config(uint offset) {
 }
 
 #include "hardware/clocks.h"
-static inline void joybus_program_init(PIO pio, uint sm, uint program_offset, uint label_offset, uint pin) {
+static inline void __not_in_flash_func(joybus_program_init)(
+    PIO pio,
+    uint sm,
+    uint program_offset,
+    uint label_offset,
+    uint pin
+) {
     pio_gpio_init(pio, pin);
     pio_sm_config c = joybus_program_get_default_config(program_offset);
     sm_config_set_out_pins(&c, pin, 1);
@@ -82,10 +88,20 @@ static inline void joybus_program_init(PIO pio, uint sm, uint program_offset, ui
     pio_sm_init(pio, sm, program_offset + label_offset, &c);
     pio_sm_set_enabled(pio, sm, true);
 }
-static inline void joybus_program_receive_init(PIO pio, uint sm, uint offset, uint pin) {
+static inline void __not_in_flash_func(joybus_program_receive_init)(
+    PIO pio,
+    uint sm,
+    uint offset,
+    uint pin
+) {
     joybus_program_init(pio, sm, offset, joybus_offset_read, pin);
 }
-static inline void joybus_program_send_init(PIO pio, uint sm, uint offset, uint pin) {
+static inline void __not_in_flash_func(joybus_program_send_init)(
+    PIO pio,
+    uint sm,
+    uint offset,
+    uint pin
+) {
     joybus_program_init(pio, sm, offset, joybus_offset_write, pin);
 }
 
