@@ -81,3 +81,7 @@ void __not_in_flash_func(GamecubeConsole::SendReport)(gc_report_t *report) {
     }
     joybus_send_bytes(&port, (uint8_t *)report, sizeof(gc_report_t));
 }
+
+int GamecubeConsole::GetOffset() {
+    return port.offset;
+}
