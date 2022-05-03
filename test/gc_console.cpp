@@ -20,6 +20,10 @@ int main(void) {
     gc = new GamecubeConsole(joybus_pin, pio0);
     gc_report_t gc_report = default_gc_report;
 
+    gpio_init(2);
+    gpio_set_dir(2, GPIO_OUT);
+    gpio_put(2, 0);
+
     // Set up LED
     bool led = true;
     gpio_init(PICO_DEFAULT_LED_PIN);

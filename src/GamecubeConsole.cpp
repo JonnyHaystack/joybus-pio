@@ -4,6 +4,7 @@
 #include "joybus.h"
 
 #include "hardware/pio.h"
+#include "hardware/timer.h"
 #include "pico/stdlib.h"
 #include "pico/time.h"
 
@@ -32,18 +33,22 @@ bool __not_in_flash_func(GamecubeConsole::WaitForPoll)() {
     // Default origin response.
     uint8_t origin[] = { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x1F, 0x1F, 0x00, 0x00 };
 
+    uint64_t reply_delay = incoming_bit_length_us - 1;
+
     while (true) {
         joybus_receive_bytes(&port, received, 1, receive_timeout_us, false);
 
         switch (received[0]) {
             case RESET:
             case PROBE:
-                sleep_us(3);
+                // Wait for stop bit before responding.
+                sleep_us(reply_delay);
                 joybus_send_bytes(&port, status, sizeof(status));
                 break;
             case RECALIBRATE:
             case ORIGIN:
-                sleep_us(3);
+                // Wait for stop bit before responding.
+                sleep_us(reply_delay);
                 joybus_send_bytes(&port, origin, sizeof(origin));
                 break;
             case POLL:
@@ -52,6 +57,10 @@ bool __not_in_flash_func(GamecubeConsole::WaitForPoll)() {
                 // Second byte indicates the reading mode.
                 // TODO: Implement other reading modes
                 if (received_len == 2 && received[0] <= 0x07) {
+                    // Set timeout for how long to wait until we can send response because we don't
+                    // want to reply before the console is done sending.
+                    last_command_end = make_timeout_time_us(reply_delay);
+
                     // Return value of rumble bit (least significant bit in last byte).
                     return received[1] & 0x01;
                 }
@@ -66,5 +75,9 @@ bool __not_in_flash_func(GamecubeConsole::WaitForPoll)() {
 }
 
 void __not_in_flash_func(GamecubeConsole::SendReport)(gc_report_t *report) {
+    // Wait for receive timeout to end before responding.
+    while (!time_reached(last_command_end)) {
+        tight_loop_contents();
+    }
     joybus_send_bytes(&port, (uint8_t *)report, sizeof(gc_report_t));
 }

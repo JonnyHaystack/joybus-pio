@@ -28,6 +28,7 @@ class GamecubeConsole {
     static const uint max_command_len;
     uint receive_timeout_us;
     uint reset_wait_period_us;
+    absolute_time_t last_command_end;
 };
 
 #endif

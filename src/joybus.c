@@ -54,6 +54,11 @@ uint __not_in_flash_func(joybus_send_receive)(
 }
 
 void __not_in_flash_func(joybus_send_bytes)(joybus_port_t *port, uint8_t *bytes, uint len) {
+    // Wait for line to be high before sending anything.
+    while (!gpio_get(port->pin)) {
+        tight_loop_contents();
+    }
+
     joybus_program_send_init(port->pio, port->sm, port->offset, port->pin, &port->config);
 
     for (int i = 0; i < len; i++) {
