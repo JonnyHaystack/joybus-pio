@@ -12,6 +12,7 @@ typedef struct {
     PIO pio;
     uint sm;
     uint offset;
+    pio_sm_config config;
 } joybus_port_t;
 
 #ifdef __cplusplus
@@ -29,9 +30,9 @@ extern "C" {
  * @param offset The instruction memory offset wanted for the start of the program. Pass in -1 to
  * allocate automatically.
  *
- * @return 0 if successful, 1 if failed to claim an unused state machine
+ * @return The offset at which the joybus program is loaded
  */
-int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset);
+uint joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset);
 
 /**
  * @brief Cleanly terminates the joybus PIO instance and frees the state machine

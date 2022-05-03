@@ -5,28 +5,24 @@
 #include "hardware/pio.h"
 #include "pico/stdlib.h"
 
-int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset) {
+uint joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset) {
     if (sm < 0) {
-        sm = pio_claim_unused_sm(pio, false);
-        if (sm < 0) {
-            return 1;
-        }
+        sm = pio_claim_unused_sm(pio, true);
     }
 
     if (offset < 0) {
         offset = pio_add_program(pio, &joybus_program);
-    } else {
-        pio_add_program_at_offset(pio, &joybus_program, offset);
     }
 
     port->pin = pin;
     port->pio = pio;
     port->sm = sm;
     port->offset = offset;
+    port->config = joybus_program_get_config(pio, sm, offset, pin);
 
-    joybus_program_receive_init(pio, sm, offset, pin);
+    joybus_port_reset(port);
 
-    return 0;
+    return offset;
 }
 
 void joybus_port_terminate(joybus_port_t *port) {
@@ -35,7 +31,7 @@ void joybus_port_terminate(joybus_port_t *port) {
 }
 
 void joybus_port_reset(joybus_port_t *port) {
-    joybus_program_receive_init(port->pio, port->sm, port->offset, port->pin);
+    joybus_program_receive_init(port->pio, port->sm, port->offset, port->pin, &port->config);
 }
 
 uint __not_in_flash_func(joybus_send_receive)(
@@ -58,7 +54,7 @@ uint __not_in_flash_func(joybus_send_receive)(
 }
 
 void __not_in_flash_func(joybus_send_bytes)(joybus_port_t *port, uint8_t *bytes, uint len) {
-    joybus_program_send_init(port->pio, port->sm, port->offset, port->pin);
+    joybus_program_send_init(port->pio, port->sm, port->offset, port->pin, &port->config);
 
     for (int i = 0; i < len; i++) {
         joybus_send_byte(port, bytes[i], i == len - 1);

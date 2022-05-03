@@ -17,7 +17,6 @@ read_loop:
 
 ; 9 bit OSR threshold, no autopull because it interferes with !osre
 public write:
-    set pindirs 0 [T2 - 1]  ; TODO: Experimental - Set pin to input and wait in case other side is still sending stop bit
     set pindirs 1           ; Set pin to output
 write_loop:
     set pins, 1             ; Set line high for at least 1uS to end pulse
@@ -45,16 +44,15 @@ write_stop_bit:
 % c-sdk {
 #include "hardware/clocks.h"
 
-static inline void __not_in_flash_func(joybus_program_init)(
+static inline pio_sm_config __not_in_flash_func(joybus_program_get_config)(
     PIO pio,
     uint sm,
-    uint program_offset,
-    uint label_offset,
+    uint offset,
     uint pin
 ) {
     pio_gpio_init(pio, pin);
 
-    pio_sm_config c = joybus_program_get_default_config(program_offset);
+    pio_sm_config c = joybus_program_get_default_config(offset);
     sm_config_set_out_pins(&c, pin, 1);
     sm_config_set_set_pins(&c, pin, 1);
     sm_config_set_in_pins(&c, pin);
@@ -68,7 +66,17 @@ static inline void __not_in_flash_func(joybus_program_init)(
     float div = clock_get_hz(clk_sys) / (cycles_per_bit * bitrate);
     sm_config_set_clkdiv(&c, div);
 
-    pio_sm_init(pio, sm, program_offset + label_offset, &c);
+    return c;
+}
+
+static inline void __not_in_flash_func(joybus_program_send_init)(
+    PIO pio,
+    uint sm,
+    uint offset,
+    uint pin,
+    pio_sm_config *c
+) {
+    pio_sm_init(pio, sm, offset + joybus_offset_write, c);
     pio_sm_set_enabled(pio, sm, true);
 }
 
@@ -76,17 +84,10 @@ static inline void __not_in_flash_func(joybus_program_receive_init)(
     PIO pio,
     uint sm,
     uint offset,
-    uint pin
+    uint pin,
+    pio_sm_config *c
 ) {
-    joybus_program_init(pio, sm, offset, joybus_offset_read, pin);
-}
-
-static inline void __not_in_flash_func(joybus_program_send_init)(
-    PIO pio,
-    uint sm,
-    uint offset,
-    uint pin
-) {
-    joybus_program_init(pio, sm, offset, joybus_offset_write, pin);
+    pio_sm_init(pio, sm, offset + joybus_offset_read, c);
+    pio_sm_set_enabled(pio, sm, true);
 }
 %}

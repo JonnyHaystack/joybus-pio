@@ -5,6 +5,7 @@
 
 #include "hardware/pio.h"
 #include "pico/stdlib.h"
+#include "pico/time.h"
 
 const uint GamecubeConsole::incoming_bit_length_us = 5;
 const uint GamecubeConsole::max_command_len = 3;
@@ -37,10 +38,12 @@ bool __not_in_flash_func(GamecubeConsole::WaitForPoll)() {
         switch (received[0]) {
             case RESET:
             case PROBE:
+                sleep_us(3);
                 joybus_send_bytes(&port, status, sizeof(status));
                 break;
             case RECALIBRATE:
             case ORIGIN:
+                sleep_us(3);
                 joybus_send_bytes(&port, origin, sizeof(origin));
                 break;
             case POLL:
