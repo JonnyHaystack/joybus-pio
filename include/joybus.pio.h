@@ -13,7 +13,7 @@
 // ------ //
 
 #define joybus_wrap_target 0
-#define joybus_wrap 23
+#define joybus_wrap 22
 
 #define joybus_T1 10
 #define joybus_T2 20
@@ -29,32 +29,31 @@ static const uint16_t joybus_program_instructions[] = {
     0x4001, //  2: in     pins, 1                    
     0x20a0, //  3: wait   1 pin, 0                   
     0x0001, //  4: jmp    1                          
-    0xf380, //  5: set    pindirs, 0             [19]
-    0xe081, //  6: set    pindirs, 1                 
-    0xe001, //  7: set    pins, 1                    
-    0x80e0, //  8: pull   ifempty block              
-    0x6021, //  9: out    x, 1                       
-    0x00ef, // 10: jmp    !osre, 15                  
-    0x00b4, // 11: jmp    x != y, 20                 
-    0x80e0, // 12: pull   ifempty block              
-    0x6021, // 13: out    x, 1                       
-    0x0010, // 14: jmp    16                         
-    0xa342, // 15: nop                           [3] 
-    0xa142, // 16: nop                           [1] 
-    0xe900, // 17: set    pins, 0                [9] 
-    0xb201, // 18: mov    pins, x                [18]
-    0x0007, // 19: jmp    7                          
-    0xa442, // 20: nop                           [4] 
-    0xe900, // 21: set    pins, 0                [9] 
-    0xf201, // 22: set    pins, 1                [18]
-    0x0000, // 23: jmp    0                          
+    0xe081, //  5: set    pindirs, 1                 
+    0xe001, //  6: set    pins, 1                    
+    0x80e0, //  7: pull   ifempty block              
+    0x6021, //  8: out    x, 1                       
+    0x00ee, //  9: jmp    !osre, 14                  
+    0x00b3, // 10: jmp    x != y, 19                 
+    0x80e0, // 11: pull   ifempty block              
+    0x6021, // 12: out    x, 1                       
+    0x000f, // 13: jmp    15                         
+    0xa342, // 14: nop                           [3] 
+    0xa142, // 15: nop                           [1] 
+    0xe900, // 16: set    pins, 0                [9] 
+    0xb201, // 17: mov    pins, x                [18]
+    0x0006, // 18: jmp    6                          
+    0xa442, // 19: nop                           [4] 
+    0xe900, // 20: set    pins, 0                [9] 
+    0xf201, // 21: set    pins, 1                [18]
+    0x0000, // 22: jmp    0                          
             //     .wrap
 };
 
 #if !PICO_NO_HARDWARE
 static const struct pio_program joybus_program = {
     .instructions = joybus_program_instructions,
-    .length = 24,
+    .length = 23,
     .origin = -1,
 };
 
@@ -65,15 +64,14 @@ static inline pio_sm_config joybus_program_get_default_config(uint offset) {
 }
 
 #include "hardware/clocks.h"
-static inline void __not_in_flash_func(joybus_program_init)(
+static inline pio_sm_config __not_in_flash_func(joybus_program_get_config)(
     PIO pio,
     uint sm,
-    uint program_offset,
-    uint label_offset,
+    uint offset,
     uint pin
 ) {
     pio_gpio_init(pio, pin);
-    pio_sm_config c = joybus_program_get_default_config(program_offset);
+    pio_sm_config c = joybus_program_get_default_config(offset);
     sm_config_set_out_pins(&c, pin, 1);
     sm_config_set_set_pins(&c, pin, 1);
     sm_config_set_in_pins(&c, pin);
@@ -85,24 +83,27 @@ static inline void __not_in_flash_func(joybus_program_init)(
     int bitrate = 250000;
     float div = clock_get_hz(clk_sys) / (cycles_per_bit * bitrate);
     sm_config_set_clkdiv(&c, div);
-    pio_sm_init(pio, sm, program_offset + label_offset, &c);
+    return c;
+}
+static inline void __not_in_flash_func(joybus_program_send_init)(
+    PIO pio,
+    uint sm,
+    uint offset,
+    uint pin,
+    pio_sm_config *c
+) {
+    pio_sm_init(pio, sm, offset + joybus_offset_write, c);
     pio_sm_set_enabled(pio, sm, true);
 }
 static inline void __not_in_flash_func(joybus_program_receive_init)(
     PIO pio,
     uint sm,
     uint offset,
-    uint pin
+    uint pin,
+    pio_sm_config *c
 ) {
-    joybus_program_init(pio, sm, offset, joybus_offset_read, pin);
-}
-static inline void __not_in_flash_func(joybus_program_send_init)(
-    PIO pio,
-    uint sm,
-    uint offset,
-    uint pin
-) {
-    joybus_program_init(pio, sm, offset, joybus_offset_write, pin);
+    pio_sm_init(pio, sm, offset + joybus_offset_read, c);
+    pio_sm_set_enabled(pio, sm, true);
 }
 
 #endif

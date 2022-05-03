@@ -13,6 +13,7 @@ class GamecubeConsole {
     ~GamecubeConsole();
     bool WaitForPoll();
     void SendReport(gc_report_t *report);
+    int GetOffset();
 
   private:
     enum command {
@@ -23,11 +24,12 @@ class GamecubeConsole {
         POLL = 0x40,
     };
 
-    joybus_port_t port;
     static const uint incoming_bit_length_us;
     static const uint max_command_len;
+    joybus_port_t port;
     uint receive_timeout_us;
     uint reset_wait_period_us;
+    absolute_time_t last_command_end;
 };
 
 #endif

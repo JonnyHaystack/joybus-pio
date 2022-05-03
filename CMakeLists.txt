@@ -11,17 +11,17 @@ pico_sdk_init()
 include_directories(include)
 
 add_executable(
-  joybus_pio
-  test/main.cpp
+  gc_console_test
+  test/gc_console.cpp
   src/joybus.c
   src/GamecubeConsole.cpp
 )
 
-pico_generate_pio_header(joybus_pio ${CMAKE_CURRENT_LIST_DIR}/src/joybus.pio)
+pico_generate_pio_header(gc_console_test ${CMAKE_CURRENT_LIST_DIR}/src/joybus.pio)
 
-target_link_libraries(joybus_pio pico_stdlib hardware_pio)
+target_link_libraries(gc_console_test pico_stdlib hardware_pio)
 
-pico_enable_stdio_usb(joybus_pio 1)
-pico_enable_stdio_uart(joybus_pio 0)
+pico_enable_stdio_usb(gc_console_test 1)
+pico_enable_stdio_uart(gc_console_test 0)
 
-pico_add_extra_outputs(joybus_pio)
+pico_add_extra_outputs(gc_console_test)

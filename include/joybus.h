@@ -12,6 +12,7 @@ typedef struct {
     PIO pio;
     uint sm;
     uint offset;
+    pio_sm_config config;
 } joybus_port_t;
 
 #ifdef __cplusplus
@@ -29,9 +30,9 @@ extern "C" {
  * @param offset The instruction memory offset wanted for the start of the program. Pass in -1 to
  * allocate automatically.
  *
- * @return 0 if successful, 1 if failed to claim an unused state machine
+ * @return The offset at which the joybus program is loaded
  */
-int joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset);
+uint joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset);
 
 /**
  * @brief Cleanly terminates the joybus PIO instance and frees the state machine
@@ -96,10 +97,17 @@ void joybus_send_byte(joybus_port_t *port, uint8_t byte, bool stop);
  * @param buf The buffer to write received bytes into
  * @param len The number of bytes to attempt to receive
  * @param timeout_us How many microseconds to wait before timing out for each byte after the first
+ * @param first_byte_can_timeout If true, the timeout is also applied to the first byte
  *
  * @return The actual number of bytes received
  */
-uint joybus_receive_bytes(joybus_port_t *port, uint8_t *buf, uint len, uint64_t timeout_us);
+uint joybus_receive_bytes(
+    joybus_port_t *port,
+    uint8_t *buf,
+    uint len,
+    uint64_t timeout_us,
+    bool first_byte_can_timeout
+);
 
 /**
  * @brief Receive a single byte from a joybus device/host
@@ -109,8 +117,6 @@ uint joybus_receive_bytes(joybus_port_t *port, uint8_t *buf, uint len, uint64_t 
  * @return The received byte
  */
 uint8_t joybus_receive_byte(joybus_port_t *port);
-
-bool joybus_receive_byte_timeout(joybus_port_t *port, uint8_t *byte, uint64_t timeout_us);
 
 #ifdef __cplusplus
 }

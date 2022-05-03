@@ -8,15 +8,21 @@
 
 void print_bytes(const char *prefix, uint8_t *bytes, uint len);
 
+GamecubeConsole *gc;
+
 int main(void) {
     set_sys_clock_khz(130000, true);
 
     stdio_init_all();
 
-    uint joybus_pin = 4;
+    uint joybus_pin = 1;
 
-    GamecubeConsole gc = GamecubeConsole(joybus_pin, pio0);
+    gc = new GamecubeConsole(joybus_pin, pio0);
     gc_report_t gc_report = default_gc_report;
+
+    gpio_init(2);
+    gpio_set_dir(2, GPIO_OUT);
+    gpio_put(2, 0);
 
     // Set up LED
     bool led = true;
@@ -24,8 +30,8 @@ int main(void) {
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
 
     while (true) {
-        gc.WaitForPoll();
-        gc.SendReport(&gc_report);
+        gc->WaitForPoll();
+        gc->SendReport(&gc_report);
 
         // Toggle LED
         led = !led;
