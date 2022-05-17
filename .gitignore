@@ -5,3 +5,4 @@
 .vscode/ipch
 .vscode/extensions.json
 build/
+config_autogen.h
