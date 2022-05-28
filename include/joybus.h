@@ -1,5 +1,5 @@
-#ifndef _JOYBUS_H
-#define _JOYBUS_H
+#ifndef _JOYBUS_JOYBUS_H
+#define _JOYBUS_JOYBUS_H
 
 #include "hardware/pio.h"
 #include "pico/stdlib.h"
