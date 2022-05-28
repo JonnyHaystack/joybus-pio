@@ -2,8 +2,8 @@
 
 #include "joybus.pio.h"
 
-#include "hardware/pio.h"
-#include "pico/stdlib.h"
+#include <hardware/pio.h>
+#include <pico/stdlib.h>
 
 uint joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset) {
     if (sm < 0) {

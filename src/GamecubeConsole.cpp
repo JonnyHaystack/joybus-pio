@@ -3,10 +3,10 @@
 #include "gamecube_definitions.h"
 #include "joybus.h"
 
-#include "hardware/pio.h"
-#include "hardware/timer.h"
-#include "pico/stdlib.h"
-#include "pico/time.h"
+#include <hardware/pio.h>
+#include <hardware/timer.h>
+#include <pico/stdlib.h>
+#include <pico/time.h>
 
 const uint GamecubeConsole::incoming_bit_length_us = 5;
 const uint GamecubeConsole::max_command_len = 3;
@@ -28,11 +28,6 @@ bool __not_in_flash_func(GamecubeConsole::WaitForPoll)() {
     uint8_t received[2];
     uint received_len;
 
-    // Default status response.
-    uint8_t status[] = { 0x09, 0x00, 0x03 };
-    // Default origin response.
-    uint8_t origin[] = { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x1F, 0x1F, 0x00, 0x00 };
-
     uint64_t reply_delay = incoming_bit_length_us - 1;
 
     while (true) {
@@ -43,13 +38,13 @@ bool __not_in_flash_func(GamecubeConsole::WaitForPoll)() {
             case PROBE:
                 // Wait for stop bit before responding.
                 sleep_us(reply_delay);
-                joybus_send_bytes(&port, status, sizeof(status));
+                joybus_send_bytes(&port, (uint8_t *)&default_gc_status, sizeof(gc_status_t));
                 break;
             case RECALIBRATE:
             case ORIGIN:
                 // Wait for stop bit before responding.
                 sleep_us(reply_delay);
-                joybus_send_bytes(&port, origin, sizeof(origin));
+                joybus_send_bytes(&port, (uint8_t *)&default_gc_origin, sizeof(gc_origin_t));
                 break;
             case POLL:
                 // Poll command is 3 bytes total, so read the next 2 bytes now.

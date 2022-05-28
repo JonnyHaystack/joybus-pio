@@ -1,8 +1,8 @@
 #ifndef _JOYBUS_JOYBUS_H
 #define _JOYBUS_JOYBUS_H
 
-#include "hardware/pio.h"
-#include "pico/stdlib.h"
+#include <hardware/pio.h>
+#include <pico/stdlib.h>
 
 /**
  * @brief A structure representing a Joybus instance on a given GPIO pin
