@@ -28,6 +28,7 @@ uint joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset
 void joybus_port_terminate(joybus_port_t *port) {
     pio_sm_set_enabled(port->pio, port->sm, false);
     pio_sm_unclaim(port->pio, port->sm);
+    pio_remove_program(port->pio, &joybus_program, port->offset);
 }
 
 void joybus_port_reset(joybus_port_t *port) {

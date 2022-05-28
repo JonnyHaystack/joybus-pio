@@ -27,15 +27,16 @@ extern "C" {
  * @param pio The PIO instance; either pio0 or pio1
  * @param sm The state machine to run the joybus instance on. Pass in -1 to automatically claim
  * unused.
- * @param offset The instruction memory offset wanted for the start of the program. Pass in -1 to
- * allocate automatically.
+ * @param offset The instruction memory offset at which to load the program. Pass in -1 to allocate
+ * automatically.
  *
  * @return The offset at which the joybus program is loaded
  */
 uint joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset);
 
 /**
- * @brief Cleanly terminates the joybus PIO instance and frees the state machine
+ * @brief Cleanly terminate the joybus PIO instance, freeing the state machine, and uninstalling the
+ * joybus program from the PIO instance
  *
  * @param port Pointer to the port to terminate
  */

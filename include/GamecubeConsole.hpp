@@ -9,10 +9,53 @@
 
 class GamecubeConsole {
   public:
-    GamecubeConsole(uint pin, PIO pio, int sm = -1, int offset = -1);
+    /**
+     * @brief Construct a new GamecubeConsole object
+     *
+     * @param pin The pin to use for the joybus instance
+     * @param pio The PIO instance; either pio0 or pio1. Default is pio0.
+     * @param sm The PIO state machine to run the joybus instance on. Default is to automatically
+     * claim an unused one.
+     * @param offset The instruction memory offset at which to load the PIO program. Default is to
+     * allocate automatically.
+     */
+    GamecubeConsole(uint pin, PIO pio = pio0, int sm = -1, int offset = -1);
+
+    /**
+     * @brief Cleanly terminate the joybus PIO instance, freeing the state machine, and uninstalling
+     * the joybus program from the PIO instance
+     */
     ~GamecubeConsole();
+
+    /**
+     * @brief Detect if a GameCube console is connected to the joybus port
+     *
+     * @return true if console is detected, false otherwise
+     */
+    bool Detect();
+
+    /**
+     * @brief Block until a poll is received from the GameCube console. Automatically responds to
+     * any probe/origin commands received in the process.
+     *
+     * @return true if rumble bit is high, false otherwise
+     */
     bool WaitForPoll();
+
+    /**
+     * @brief Send a GameCube controller input report to a connected GameCube console
+     *
+     * @param report The report to send
+     */
     void SendReport(gc_report_t *report);
+
+    /**
+     * @brief Get the offset at which the PIO program was installed. Useful if you want to
+     * communicate with multiple joybus devices without having to load multiple copies of the PIO
+     * program.
+     *
+     * @return The offset at which the PIO program was installed
+     */
     int GetOffset();
 
   private:

@@ -16,6 +16,37 @@ GamecubeConsole::~GamecubeConsole() {
     joybus_port_terminate(&_port);
 }
 
+bool __no_inline_not_in_flash_func(GamecubeConsole::Detect)() {
+    // Buffer for receiving command.
+    uint8_t received[1];
+
+    // We make at most 10 attempts to receive and respond to PROBE commands from a console. GameCube
+    // and N64 both have the same PROBE command (0x00), so we don't know for sure that we're
+    // connected to a GameCube until we receive a GameCube ORIGIN command.
+    for (uint8_t attempts = 0; attempts < 10; attempts++) {
+        // Always apply timeout (10ms), so that we don't block indefinitely if nothing is connected.
+        joybus_receive_bytes(&_port, received, 1, 10'000, true);
+
+        switch (received[0]) {
+            case RESET:
+            case PROBE:
+                sleep_us(reply_delay);
+                joybus_send_bytes(&_port, (uint8_t *)&default_gc_status, sizeof(gc_status_t));
+                break;
+            case RECALIBRATE:
+            case ORIGIN:
+                return true;
+            default:
+                // If we received an invalid command, wait long enough for command
+                // to finish, then reset receiving.
+                sleep_us(reset_wait_period_us);
+                joybus_port_reset(&_port);
+        }
+    }
+
+    return false;
+}
+
 bool __no_inline_not_in_flash_func(GamecubeConsole::WaitForPoll)() {
     // Buffer for receiving command.
     uint8_t received[2];
