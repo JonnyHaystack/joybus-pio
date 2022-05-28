@@ -16,7 +16,7 @@ GamecubeConsole::~GamecubeConsole() {
     joybus_port_terminate(&_port);
 }
 
-bool __not_in_flash_func(GamecubeConsole::WaitForPoll)() {
+bool __no_inline_not_in_flash_func(GamecubeConsole::WaitForPoll)() {
     // Buffer for receiving command.
     uint8_t received[2];
     uint received_len;
@@ -60,7 +60,7 @@ bool __not_in_flash_func(GamecubeConsole::WaitForPoll)() {
     }
 }
 
-void __not_in_flash_func(GamecubeConsole::SendReport)(gc_report_t *report) {
+void __no_inline_not_in_flash_func(GamecubeConsole::SendReport)(gc_report_t *report) {
     // Wait for receive timeout to end before responding.
     while (!time_reached(_receive_end)) {
         tight_loop_contents();

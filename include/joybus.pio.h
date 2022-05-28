@@ -63,13 +63,8 @@ static inline pio_sm_config joybus_program_get_default_config(uint offset) {
     return c;
 }
 
-#include "hardware/clocks.h"
-static inline pio_sm_config __not_in_flash_func(joybus_program_get_config)(
-    PIO pio,
-    uint sm,
-    uint offset,
-    uint pin
-) {
+#include <hardware/clocks.h>
+static inline pio_sm_config joybus_program_get_config(PIO pio, uint sm, uint offset, uint pin) {
     pio_gpio_init(pio, pin);
     pio_sm_config c = joybus_program_get_default_config(offset);
     sm_config_set_out_pins(&c, pin, 1);
@@ -85,7 +80,7 @@ static inline pio_sm_config __not_in_flash_func(joybus_program_get_config)(
     sm_config_set_clkdiv(&c, div);
     return c;
 }
-static inline void __not_in_flash_func(joybus_program_send_init)(
+static inline void joybus_program_send_init(
     PIO pio,
     uint sm,
     uint offset,
@@ -95,7 +90,7 @@ static inline void __not_in_flash_func(joybus_program_send_init)(
     pio_sm_init(pio, sm, offset + joybus_offset_write, c);
     pio_sm_set_enabled(pio, sm, true);
 }
-static inline void __not_in_flash_func(joybus_program_receive_init)(
+static inline void joybus_program_receive_init(
     PIO pio,
     uint sm,
     uint offset,

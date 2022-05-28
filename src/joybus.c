@@ -34,7 +34,7 @@ void joybus_port_reset(joybus_port_t *port) {
     joybus_program_receive_init(port->pio, port->sm, port->offset, port->pin, &port->config);
 }
 
-uint __not_in_flash_func(joybus_send_receive)(
+uint __no_inline_not_in_flash_func(joybus_send_receive)(
     joybus_port_t *port,
     uint8_t *message,
     uint message_len,
@@ -53,7 +53,11 @@ uint __not_in_flash_func(joybus_send_receive)(
     return joybus_receive_bytes(port, response_buf, response_len, read_timeout_us, false);
 }
 
-void __not_in_flash_func(joybus_send_bytes)(joybus_port_t *port, uint8_t *bytes, uint len) {
+void __no_inline_not_in_flash_func(joybus_send_bytes)(
+    joybus_port_t *port,
+    uint8_t *bytes,
+    uint len
+) {
     // Wait for line to be high before sending anything.
     while (!gpio_get(port->pin)) {
         tight_loop_contents();
@@ -66,12 +70,12 @@ void __not_in_flash_func(joybus_send_bytes)(joybus_port_t *port, uint8_t *bytes,
     }
 }
 
-void __not_in_flash_func(joybus_send_byte)(joybus_port_t *port, uint8_t byte, bool stop) {
+void __no_inline_not_in_flash_func(joybus_send_byte)(joybus_port_t *port, uint8_t byte, bool stop) {
     uint32_t data_shifted = (byte << 24) | (stop << 23);
     pio_sm_put_blocking(port->pio, port->sm, data_shifted);
 }
 
-uint __not_in_flash_func(joybus_receive_bytes)(
+uint __no_inline_not_in_flash_func(joybus_receive_bytes)(
     joybus_port_t *port,
     uint8_t *buf,
     uint len,
@@ -103,6 +107,6 @@ uint __not_in_flash_func(joybus_receive_bytes)(
     return bytes_received;
 }
 
-uint8_t __not_in_flash_func(joybus_receive_byte)(joybus_port_t *port) {
+uint8_t __no_inline_not_in_flash_func(joybus_receive_byte)(joybus_port_t *port) {
     return pio_sm_get_blocking(port->pio, port->sm);
 }
