@@ -11,3 +11,4 @@ pico_sdk_init()
 include_directories(../include)
 
 add_subdirectory(GamecubeConsole)
+add_subdirectory(GamecubeController)

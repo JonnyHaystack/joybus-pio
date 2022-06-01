@@ -12,7 +12,7 @@ class GamecubeConsole {
     /**
      * @brief Construct a new GamecubeConsole object
      *
-     * @param pin The pin to use for the joybus instance
+     * @param pin The GPIO pin that the GameCube console's data line is connected to
      * @param pio The PIO instance; either pio0 or pio1. Default is pio0.
      * @param sm The PIO state machine to run the joybus instance on. Default is to automatically
      * claim an unused one.
@@ -59,14 +59,6 @@ class GamecubeConsole {
     int GetOffset();
 
   private:
-    enum command {
-        PROBE = 0x00,
-        RESET = 0xFF,
-        ORIGIN = 0x41,
-        RECALIBRATE = 0x42,
-        POLL = 0x40,
-    };
-
     static constexpr uint incoming_bit_length_us = 5;
     static constexpr uint max_command_bytes = 3;
     static constexpr uint receive_timeout_us = incoming_bit_length_us * 10;

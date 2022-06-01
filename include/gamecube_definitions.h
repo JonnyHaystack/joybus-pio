@@ -3,13 +3,22 @@
 
 #include <pico/stdlib.h>
 
+enum command {
+    PROBE = 0x00,
+    RESET = 0xFF,
+    ORIGIN = 0x41,
+    RECALIBRATE = 0x42,
+    POLL = 0x40,
+};
+
 typedef struct __attribute__((packed)) {
     uint8_t a : 1;
     uint8_t b : 1;
     uint8_t x : 1;
     uint8_t y : 1;
     uint8_t start : 1;
-    uint8_t reserved0 : 3;
+    uint8_t origin : 1;
+    uint8_t reserved0 : 2;
 
     uint8_t dpad_left : 1;
     uint8_t dpad_right : 1;
@@ -35,9 +44,8 @@ typedef struct __attribute__((packed)) {
 } gc_origin_t;
 
 typedef struct __attribute__((packed)) {
-    uint8_t unknown0;
-    uint8_t unknown1;
-    uint8_t unknown2;
+    uint16_t device;
+    uint8_t status;
 } gc_status_t;
 
 static constexpr gc_report_t default_gc_report = {
@@ -46,6 +54,7 @@ static constexpr gc_report_t default_gc_report = {
     .x = 0,
     .y = 0,
     .start = 0,
+    .origin = 0,
     .reserved0 = 0,
     .dpad_left = 0,
     .dpad_right = 0,
@@ -70,9 +79,8 @@ static constexpr gc_origin_t default_gc_origin = {
 };
 
 static constexpr gc_status_t default_gc_status = {
-    .unknown0 = 0x09,
-    .unknown1 = 0x00,
-    .unknown2 = 0x03,
+    .device = 0x0009,
+    .status = 0x03,
 };
 
 #endif

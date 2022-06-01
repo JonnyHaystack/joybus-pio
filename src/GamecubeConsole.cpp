@@ -25,7 +25,9 @@ bool __no_inline_not_in_flash_func(GamecubeConsole::Detect)() {
     // connected to a GameCube until we receive a GameCube ORIGIN command.
     for (uint8_t attempts = 0; attempts < 10; attempts++) {
         // Always apply timeout (10ms), so that we don't block indefinitely if nothing is connected.
-        joybus_receive_bytes(&_port, received, 1, 10'000, true);
+        if (joybus_receive_bytes(&_port, received, 1, 10'000, true) != 1) {
+            continue;
+        }
 
         switch (received[0]) {
             case RESET:
