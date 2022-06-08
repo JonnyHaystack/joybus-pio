@@ -104,3 +104,7 @@ bool __no_inline_not_in_flash_func(GamecubeController::Poll)(gc_report_t *report
 
     return true;
 }
+
+int GamecubeController::GetOffset() {
+    return _port.offset;
+}

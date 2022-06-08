@@ -28,7 +28,25 @@ class GamecubeController {
      */
     ~GamecubeController();
 
+    /**
+     * @brief Send a poll to the GameCube controller. Delay will be added if necessary to conform
+     * with the chosen polling rate.
+     *
+     * @param report The report buffer to write the controller's response into
+     * @param rumble True to enable rumble, false to disable
+     *
+     * @return true if the controller responded, false otherwise
+     */
     bool Poll(gc_report_t *report, bool rumble);
+
+    /**
+     * @brief Get the offset at which the PIO program was installed. Useful if you want to
+     * communicate with multiple joybus devices without having to load multiple copies of the PIO
+     * program.
+     *
+     * @return The offset at which the PIO program was installed
+     */
+    int GetOffset();
 
   private:
     static constexpr uint incoming_bit_length_us = 4;
