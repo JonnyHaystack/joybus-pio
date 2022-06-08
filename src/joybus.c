@@ -8,6 +8,8 @@
 uint joybus_port_init(joybus_port_t *port, uint pin, PIO pio, int sm, int offset) {
     if (sm < 0) {
         sm = pio_claim_unused_sm(pio, true);
+    } else {
+        pio_sm_claim(pio, sm);
     }
 
     if (offset < 0) {
