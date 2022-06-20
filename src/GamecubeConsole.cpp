@@ -32,7 +32,7 @@ bool __no_inline_not_in_flash_func(GamecubeConsole::Detect)() {
         switch (received[0]) {
             case RESET:
             case PROBE:
-                sleep_us(reply_delay);
+                busy_wait_us(reply_delay);
                 joybus_send_bytes(&_port, (uint8_t *)&default_gc_status, sizeof(gc_status_t));
                 break;
             case RECALIBRATE:
@@ -41,7 +41,7 @@ bool __no_inline_not_in_flash_func(GamecubeConsole::Detect)() {
             default:
                 // If we received an invalid command, wait long enough for command
                 // to finish, then reset receiving.
-                sleep_us(reset_wait_period_us);
+                busy_wait_us(reset_wait_period_us);
                 joybus_port_reset(&_port);
         }
     }
@@ -61,13 +61,13 @@ bool __no_inline_not_in_flash_func(GamecubeConsole::WaitForPoll)() {
             case RESET:
             case PROBE:
                 // Wait for stop bit before responding.
-                sleep_us(reply_delay);
+                busy_wait_us(reply_delay);
                 joybus_send_bytes(&_port, (uint8_t *)&default_gc_status, sizeof(gc_status_t));
                 break;
             case RECALIBRATE:
             case ORIGIN:
                 // Wait for stop bit before responding.
-                sleep_us(reply_delay);
+                busy_wait_us(reply_delay);
                 joybus_send_bytes(&_port, (uint8_t *)&default_gc_origin, sizeof(gc_origin_t));
                 break;
             case POLL:
@@ -87,7 +87,7 @@ bool __no_inline_not_in_flash_func(GamecubeConsole::WaitForPoll)() {
             default:
                 // If we received an invalid command, wait long enough for command
                 // to finish, then reset receiving.
-                sleep_us(reset_wait_period_us);
+                busy_wait_us(reset_wait_period_us);
                 joybus_port_reset(&_port);
         }
     }
