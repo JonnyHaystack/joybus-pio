@@ -9,11 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions-ecosystem/action-get-latest-tag@v1
-        id: get-latest-tag
-
       - name: Clone doxygen-awesome theme
         run: git clone https://github.com/jothepro/doxygen-awesome-css.git
         shell: bash
@@ -21,6 +16,11 @@ jobs:
       - name: Install Graphviz
         run: sudo apt-get install graphviz -y
         shell: bash
+
+      - uses: actions/checkout@v2
+
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
 
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
         with:
