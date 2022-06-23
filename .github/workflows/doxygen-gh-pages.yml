@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          path: tmp
 
       - uses: actions-ecosystem/action-get-latest-tag@v1
         id: get-latest-tag
