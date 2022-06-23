@@ -7,6 +7,12 @@
 #include <hardware/pio.h>
 #include <pico/stdlib.h>
 
+enum class PollStatus {
+    RUMBLE_OFF,
+    RUMBLE_ON,
+    ERROR,
+};
+
 class GamecubeConsole {
   public:
     /**
@@ -43,6 +49,24 @@ class GamecubeConsole {
     bool WaitForPoll();
 
     /**
+     * @brief Block until the first byte of a poll command is received from the GameCube console.
+     * Automatically responds to any probe/origin commands received in the process. This function is
+     * provided in order to make it possible to do processing while the second and third bytes of
+     * the poll command. You must call WaitForPollEnd() before SendReport() if using this function.
+     *
+     * @return The reading mode requested by the poll command
+     */
+    void WaitForPollStart();
+
+    /**
+     * @brief Block until last two bytes of a poll command are received, or time out after 50us.
+     * Must be called before SendReport() if you called WaitForPollStart().
+     *
+     * @return PollStatus enum indicating RUMBLE_OFF, RUMBLE_ON, or ERROR
+     */
+    PollStatus WaitForPollEnd();
+
+    /**
      * @brief Send a GameCube controller input report to a connected GameCube console
      *
      * @param report The report to send
@@ -68,6 +92,7 @@ class GamecubeConsole {
 
     joybus_port_t _port;
     absolute_time_t _receive_end;
+    uint8_t _reading_mode = 3;
 };
 
 #endif
