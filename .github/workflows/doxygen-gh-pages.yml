@@ -18,10 +18,8 @@ jobs:
         run: sudo apt-get install graphviz -y
         shell: bash
 
-      - name: Auto-clone doxygen-awesome theme
-        run: |
-          shopt -s expand_aliases
-          alias doxygen="git clone https://github.com/jothepro/doxygen-awesome-css.git && doxygen"
+      - name: Clone Doxygen Awesome theme
+        run: git clone https://github.com/jothepro/doxygen-awesome-css.git
         shell: bash
 
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
