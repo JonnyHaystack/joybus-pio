@@ -11,9 +11,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          persist-credentials: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions-ecosystem/action-get-latest-tag@v1
         id: get-latest-tag
@@ -29,7 +29,6 @@ jobs:
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: false
         env:
           RELEASE_VERSION: ${{ steps.get-latest-tag.outputs.tag }}
     env:
