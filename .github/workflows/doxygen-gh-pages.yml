@@ -23,7 +23,7 @@ jobs:
         shell: bash
 
       - name: Clone Doxygen Awesome theme
-        run: sudo git clone https://github.com/jothepro/doxygen-awesome-css.git
+        run: sudo git clone https://github.com/jothepro/doxygen-awesome-css.git /opt/doxygen-awesome-css
         shell: bash
 
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
