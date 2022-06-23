@@ -1,24 +1,20 @@
 name: Doxygen GitHub Pages Deploy Action
 
 on:
-  release:
-    types:
-      - published
-      - unpublished
-      - created
-      - edited
-      - deleted
-      - prereleased
-      - released
+  push:
+    branches:
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
     env:
       REPO_NAME: ${{ github.event.release.repository.name }}
       REPO_DESCRIPTION: ${{ github.event.release.repository.description }}
-      RELEASE_VERSION: ${{ github.event.release.tag_name }}
+      RELEASE_VERSION: ${{ steps.get-latest-tag.outputs.tag }}
