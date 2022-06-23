@@ -16,7 +16,7 @@ jobs:
       - uses: actions-ecosystem/action-get-latest-tag@v1.6.0
         id: get-latest-tag
 
-      - run: rm -rf ./*
+      - run: rm -rf ./* .git
         shell: bash
 
       - name: Install Graphviz
