@@ -14,6 +14,10 @@ jobs:
       - uses: actions-ecosystem/action-get-latest-tag@v1
         id: get-latest-tag
 
+      - name: Clone doxygen-awesome theme
+        run: git clone https://github.com/jothepro/doxygen-awesome-css.git
+        shell: bash
+
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
