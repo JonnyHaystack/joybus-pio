@@ -13,7 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: /opt/tmp
+          path: tmp
+
+      - run: cd tmp
+        shell: bash
 
       - uses: actions-ecosystem/action-get-latest-tag@v1
         id: get-latest-tag
