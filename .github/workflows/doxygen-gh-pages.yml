@@ -1,9 +1,15 @@
 name: Doxygen GitHub Pages Deploy Action
 
 on:
-  push:
-    branches:
-      - master
+  release:
+    types:
+      - published
+      - unpublished
+      - created
+      - edited
+      - deleted
+      - prereleased
+      - released
 
 jobs:
   deploy:
@@ -12,3 +18,7 @@ jobs:
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      REPO_NAME: ${{ github.event.release.repository.name }}
+      REPO_DESCRIPTION: ${{ github.event.release.repository.description }}
+      RELEASE_VERSION: ${{ github.event.release.tag_name }}
