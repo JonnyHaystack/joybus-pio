@@ -12,14 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          path: tmp
 
-      - run: cd tmp
-        shell: bash
-
-      - uses: actions-ecosystem/action-get-latest-tag@v1
+      - uses: actions-ecosystem/action-get-latest-tag@v1.6.0
         id: get-latest-tag
+
+      - run: rm -rf ./*
+        shell: bash
 
       - name: Install Graphviz
         run: sudo apt-get install graphviz -y
