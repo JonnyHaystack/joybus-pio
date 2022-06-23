@@ -18,7 +18,7 @@ jobs:
 
       - run: |
           shopt -s dotglob
-          sudo rm -rf ./*"
+          sudo rm -rf ./*
           shopt -u dotglob
         shell: bash
 
