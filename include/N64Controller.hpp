@@ -1,8 +1,8 @@
 #ifndef _JOYBUS_N64CONTROLLER_HPP
 #define _JOYBUS_N64CONTROLLER_HPP
 
-#include "n64_definitions.h"
 #include "joybus.h"
+#include "n64_definitions.h"
 
 #include <hardware/pio.h>
 #include <pico/stdlib.h>
