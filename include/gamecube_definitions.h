@@ -3,7 +3,7 @@
 
 #include <pico/stdlib.h>
 
-enum command {
+enum class GamecubeCommand {
     PROBE = 0x00,
     RESET = 0xFF,
     ORIGIN = 0x41,
