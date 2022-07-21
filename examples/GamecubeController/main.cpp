@@ -34,6 +34,7 @@ int main(void) {
         printf("L: %d\n", report.l);
         printf("R: %d\n", report.r);
         printf("Z: %d\n", report.z);
+        printf("Start: %d\n", report.start);
         printf("D-Pad Left: %d\n", report.dpad_left);
         printf("D-Pad Right: %d\n", report.dpad_right);
         printf("D-Pad Down: %d\n", report.dpad_down);
