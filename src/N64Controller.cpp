@@ -27,7 +27,7 @@ void __no_inline_not_in_flash_func(N64Controller::_wait_poll_cooldown)() {
 
 bool __no_inline_not_in_flash_func(N64Controller::_init)() {
     // Send probe command.
-    uint8_t probe_cmd[] = { PROBE_N64 };
+    uint8_t probe_cmd[] = { (uint8_t)N64Command::PROBE };
     joybus_send_bytes(&_port, probe_cmd, sizeof(probe_cmd));
 
     // Read and validate probe response.
@@ -48,21 +48,21 @@ bool __no_inline_not_in_flash_func(N64Controller::_init)() {
     _wait_poll_cooldown();
 
     // Send origin command.
-    uint8_t origin_cmd[] = { POLL_N64 };
+    uint8_t origin_cmd[] = { (uint8_t)N64Command::POLL };
     joybus_send_bytes(&_port, origin_cmd, sizeof(origin_cmd));
 
-    // Read and validate origin response.
-    n64_origin_t origin;
+    // Read and validate poll response.
+    n64_report_t report;
     received_len = joybus_receive_bytes(
         &_port,
-        (uint8_t *)&origin,
-        sizeof(n64_origin_t),
+        (uint8_t *)&report,
+        sizeof(n64_report_t),
         receive_timeout_us,
         true
     );
 
     // If response is invalid, return false.
-    if (received_len != sizeof(n64_origin_t)) {
+    if (received_len != sizeof(n64_report_t)) {
         return false;
     }
 
@@ -83,7 +83,7 @@ bool __no_inline_not_in_flash_func(N64Controller::Poll)(n64_report_t *report, bo
     _wait_poll_cooldown();
 
     // Send poll command.
-    uint8_t poll_cmd[] = { POLL_N64, 0x03, rumble };
+    uint8_t poll_cmd[] = { (uint8_t)N64Command::POLL, 0x03, rumble };
     joybus_send_bytes(&_port, poll_cmd, sizeof(poll_cmd));
 
     // Read and validate report.
@@ -95,9 +95,8 @@ bool __no_inline_not_in_flash_func(N64Controller::Poll)(n64_report_t *report, bo
         true
     );
 
-    // If report origin bit is 1, it indicates that the controller is not initialized properly, so
-    // we want to restart the initialization process.
-    if (received_len != sizeof(n64_report_t) || report->origin) {
+    // If response is invalid, restart the initialization process.
+    if (received_len != sizeof(n64_report_t)) {
         _initialized = false;
         return false;
     }

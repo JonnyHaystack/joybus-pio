@@ -1,17 +1,11 @@
 #ifndef _JOYBUS_N64CONSOLE_HPP
 #define _JOYBUS_N64CONSOLE_HPP
 
-#include "n64_definitions.h"
 #include "joybus.h"
+#include "n64_definitions.h"
 
 #include <hardware/pio.h>
 #include <pico/stdlib.h>
-
-enum class PollStatus_N64 {
-    RUMBLE_OFF,
-    RUMBLE_ON,
-    ERROR,
-};
 
 class N64Console {
   public:
@@ -34,7 +28,7 @@ class N64Console {
     ~N64Console();
 
     /**
-     * @brief Detect if a N64 console is connected to the joybus port
+     * @brief Detect if an N64 console is connected to the joybus port
      *
      * @return true if console is detected, false otherwise
      */
@@ -49,25 +43,7 @@ class N64Console {
     bool WaitForPoll();
 
     /**
-     * @brief Block until the first byte of a poll command is received from the N64 console.
-     * Automatically responds to any probe/origin commands received in the process. This function is
-     * provided in order to make it possible to do processing while the second and third bytes of
-     * the poll command. You must call WaitForPollEnd() before SendReport() if using this function.
-     *
-     * @return The reading mode requested by the poll command
-     */
-    void WaitForPollStart();
-
-    /**
-     * @brief Block until last two bytes of a poll command are received, or time out after 50us.
-     * Must be called before SendReport() if you called WaitForPollStart().
-     *
-     * @return PollStatus enum indicating RUMBLE_OFF, RUMBLE_ON, or ERROR
-     */
-    PollStatus_N64 WaitForPollEnd();
-
-    /**
-     * @brief Send a N64 controller input report to a connected N64 console
+     * @brief Send an N64 controller input report to a connected N64 console
      *
      * @param report The report to send
      */
@@ -92,7 +68,6 @@ class N64Console {
 
     joybus_port_t _port;
     absolute_time_t _receive_end;
-    uint8_t _reading_mode = 3;
 };
 
 #endif
