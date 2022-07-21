@@ -39,6 +39,9 @@ bool __no_inline_not_in_flash_func(N64Console::Detect)() {
             case N64Command::POLL:
                 busy_wait_us(reply_delay);
                 joybus_send_bytes(&_port, (uint8_t *)&default_n64_report, sizeof(n64_report_t));
+                // Wait for command to finish sending before returning, otherwise it may be
+                // interrupted.
+                busy_wait_us(40 * sizeof(n64_report_t));
                 return true;
             default:
                 // If we received an invalid command, wait long enough for command
