@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['gamecubeconsole_12',['GamecubeConsole',['../classGamecubeConsole.html',1,'']]],
-  ['gamecubecontroller_13',['GamecubeController',['../classGamecubeController.html',1,'']]]
+  ['gamecubeconsole_16',['GamecubeConsole',['../classGamecubeConsole.html',1,'']]],
+  ['gamecubecontroller_17',['GamecubeController',['../classGamecubeController.html',1,'']]]
 ];

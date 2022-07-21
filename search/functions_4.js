@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['waitforpoll_21',['WaitForPoll',['../classGamecubeConsole.html#a23f8580cabdd883a166c55d1fde8de60',1,'GamecubeConsole']]],
-  ['waitforpollend_22',['WaitForPollEnd',['../classGamecubeConsole.html#a6e635583993a39d3d147c17f0b05246b',1,'GamecubeConsole']]],
-  ['waitforpollstart_23',['WaitForPollStart',['../classGamecubeConsole.html#aa0c93512008f332b3f8f4b1ee87252ac',1,'GamecubeConsole']]]
+  ['sendreport_28',['SendReport',['../classGamecubeConsole.html#a7bb65917a23fda8c06af5979837bdf89',1,'GamecubeConsole::SendReport()'],['../classN64Console.html#aa2c1aa493ab9eaad5ccc30a58378938c',1,'N64Console::SendReport()']]]
 ];

@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['_7egamecubeconsole_24',['~GamecubeConsole',['../classGamecubeConsole.html#ab44f0c0357ed4a11092f980170a5b94f',1,'GamecubeConsole']]],
-  ['_7egamecubecontroller_25',['~GamecubeController',['../classGamecubeController.html#acf7f06ef759fa88405bb95106b7e8c73',1,'GamecubeController']]]
+  ['waitforpoll_29',['WaitForPoll',['../classGamecubeConsole.html#a23f8580cabdd883a166c55d1fde8de60',1,'GamecubeConsole::WaitForPoll()'],['../classN64Console.html#a44ec262adad6276fd237e7275c79aef8',1,'N64Console::WaitForPoll()']]],
+  ['waitforpollend_30',['WaitForPollEnd',['../classGamecubeConsole.html#a6e635583993a39d3d147c17f0b05246b',1,'GamecubeConsole']]],
+  ['waitforpollstart_31',['WaitForPollStart',['../classGamecubeConsole.html#aa0c93512008f332b3f8f4b1ee87252ac',1,'GamecubeConsole']]]
 ];
