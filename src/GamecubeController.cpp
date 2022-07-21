@@ -27,7 +27,7 @@ void __no_inline_not_in_flash_func(GamecubeController::_wait_poll_cooldown)() {
 
 bool __no_inline_not_in_flash_func(GamecubeController::_init)() {
     // Send probe command.
-    uint8_t probe_cmd[] = { PROBE };
+    uint8_t probe_cmd[] = { (uint8_t)GamecubeCommand::PROBE };
     joybus_send_bytes(&_port, probe_cmd, sizeof(probe_cmd));
 
     // Read and validate probe response.
@@ -48,7 +48,7 @@ bool __no_inline_not_in_flash_func(GamecubeController::_init)() {
     _wait_poll_cooldown();
 
     // Send origin command.
-    uint8_t origin_cmd[] = { ORIGIN };
+    uint8_t origin_cmd[] = { (uint8_t)GamecubeCommand::ORIGIN };
     joybus_send_bytes(&_port, origin_cmd, sizeof(origin_cmd));
 
     // Read and validate origin response.
@@ -83,7 +83,7 @@ bool __no_inline_not_in_flash_func(GamecubeController::Poll)(gc_report_t *report
     _wait_poll_cooldown();
 
     // Send poll command.
-    uint8_t poll_cmd[] = { POLL, 0x03, rumble };
+    uint8_t poll_cmd[] = { (uint8_t)GamecubeCommand::POLL, 0x03, rumble };
     joybus_send_bytes(&_port, poll_cmd, sizeof(poll_cmd));
 
     // Read and validate report.
