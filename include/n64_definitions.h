@@ -3,11 +3,12 @@
 
 #include <pico/stdlib.h>
 
-enum command_n64 {
-    PROBE_N64 = 0x00,
-    RESET_N64 = 0xFF,
-    POLL_N64 = 0x01,
-    WRITE_N64 = 0x02 //Unused at the moment
+enum class N64Command {
+    PROBE = 0x00,
+    RESET = 0xFF,
+    POLL = 0x01,
+    READ_EXPANSION_BUS = 0x02,
+    WRITE_EXPANSION_BUS = 0x03,
 };
 
 typedef struct __attribute__((packed)) {
@@ -20,22 +21,18 @@ typedef struct __attribute__((packed)) {
     uint8_t b : 1;
     uint8_t a : 1;
 
-    uint8_t cbutton_right : 1;
-    uint8_t cbutton_left : 1;
-    uint8_t cbutton_down : 1;
-    uint8_t cbutton_up : 1;
+    uint8_t c_right : 1;
+    uint8_t c_left : 1;
+    uint8_t c_down : 1;
+    uint8_t c_up : 1;
     uint8_t r : 1;
     uint8_t l : 1;
     uint8_t reserved1 : 1;
-    uint8_t origin : 1;
+    uint8_t reserved0 : 1;
 
     uint8_t stick_x;
     uint8_t stick_y;
 } n64_report_t;
-
-typedef struct __attribute__((packed)) {
-    n64_report_t initial_inputs;
-} n64_origin_t;
 
 typedef struct __attribute__((packed)) {
     uint16_t device;
@@ -51,22 +48,16 @@ static constexpr n64_report_t default_n64_report = {
     .z = 0,
     .b = 0,
     .a = 0,
-
-    .cbutton_right = 0,
-    .cbutton_left = 0,
-    .cbutton_down = 0,
-    .cbutton_up = 0,
+    .c_right = 0,
+    .c_left = 0,
+    .c_down = 0,
+    .c_up = 0,
     .r = 0,
     .l = 0,
     .reserved1 = 0,
-    .origin = 0,
-
+    .reserved0 = 0,
     .stick_x = 0,
     .stick_y = 0,
-};
-
-static constexpr n64_origin_t default_n64_origin = {
-    .initial_inputs = default_n64_report,
 };
 
 static constexpr n64_status_t default_n64_status = {
