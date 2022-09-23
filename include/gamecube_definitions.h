@@ -12,21 +12,21 @@ enum class GamecubeCommand {
 };
 
 typedef struct __attribute__((packed)) {
-    uint8_t a : 1;
-    uint8_t b : 1;
-    uint8_t x : 1;
-    uint8_t y : 1;
-    uint8_t start : 1;
-    uint8_t origin : 1;
+    bool a : 1;
+    bool b : 1;
+    bool x : 1;
+    bool y : 1;
+    bool start : 1;
+    bool origin : 1;
     uint8_t reserved0 : 2;
 
-    uint8_t dpad_left : 1;
-    uint8_t dpad_right : 1;
-    uint8_t dpad_down : 1;
-    uint8_t dpad_up : 1;
-    uint8_t z : 1;
-    uint8_t r : 1;
-    uint8_t l : 1;
+    bool dpad_left : 1;
+    bool dpad_right : 1;
+    bool dpad_down : 1;
+    bool dpad_up : 1;
+    bool z : 1;
+    bool r : 1;
+    bool l : 1;
     uint8_t reserved1 : 1;
 
     uint8_t stick_x;
